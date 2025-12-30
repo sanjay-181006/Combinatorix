@@ -59,7 +59,7 @@ def select():
 
 def groupf():
     sizes = []
-    I = input("What are the items you want to group?")
+    I = input("What are the items you want to group? (all items are considered distinct)")
     h = int(input(f"Enter the number of {I} available: "))
     g = int(input("Enter how many groups you want to form: "))
 
@@ -84,7 +84,7 @@ def groupf():
           f"groups in {W} different ways.")
 def groupd():
     sizes = []
-    I = input("What are the items you want to group?")
+    I = input("What are the items you want to group? (all items are considered distinct)")
     h = int(input(f"Enter the number of {I} available: "))
     g = int(input("Enter how many groups you want to form: "))
 
