@@ -45,8 +45,6 @@ def arrange():
             if ts!=C:
                 print(f"total can't be more than {C}. Aborting!!!")
             elif ts==C:
-                sets=set(arr)
-                if len(sets)!=len(arr):
             
                     
         
@@ -84,6 +82,33 @@ def groupf():
 
     return(f"You can split {h} distinct {I} into the specified "
           f"groups in {W} different ways.")
+def groupd():
+    sizes = []
+    I = input("What are the items you want to group?")
+    h = int(input(f"Enter the number of {I} available: "))
+    g = int(input("Enter how many groups you want to form: "))
+
+    total = 0
+    for i in range(g):
+        s = int(input(f"  size of group {i + 1}: "))
+        sizes.append(s)
+        total += s
+
+    if total != h:
+        print(f"The sizes you entered sum to {total}, "
+              f"but there are {h} {I}.  Please try again.")
+        return None
+    denom = 1
+    for s in set(sizes):
+        m = sizes.count(s)
+        denom *= (f(s) ** m) * f(m)
+
+    W = f(h) // denom
+    DW=W*f(g)
+
+    return(f"You can distribute {h} distinct {I} into the specified "
+          f"groups in {DW} different ways.")
+    
             
         
         
