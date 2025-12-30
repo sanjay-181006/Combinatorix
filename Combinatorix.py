@@ -45,6 +45,8 @@ def arrange():
             if ts!=C:
                 print(f"total can't be more than {C}. Aborting!!!")
             elif ts==C:
+                sets=set(arr)
+                if len(sets)!=len(arr):
             
                     
         
