@@ -52,9 +52,9 @@ def arrange():
             ways = 1
         else:
             # circular permutations of r distinct objects = (r-1)!
-            ways = f(r)
+            ways = f(r-1)
         print(f"The number of circular arrangements of {r} distinct {a} is {ways}.")
-    else:
+    elif rep.lower()==no or circ.lower()==no:
         ways = p(b, r)
         print(f"The number of ways of arranging {r} distinct {a} out of {b} {a} in a line is {ways}.")
 
@@ -75,7 +75,7 @@ def select():
         # simple nCr
         g = c(n, r)
         print(f"The number of ways of selecting {r} {d} out of {n} {d} is {g}.")
-    else:
+    elif rep.lower()=="yes":
         # combinations with repetition: C(n+r-1, r)
         g = c(n + r - 1, r)
         print(f"The number of ways of selecting {r} {d} from {n} {d} with repetition is {g}.")
