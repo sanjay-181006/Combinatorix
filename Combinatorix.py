@@ -1,143 +1,128 @@
 print("Let's solve some Combinatorics!!")
 
-# ---------- basic functions ----------
+# ---------- basic math ----------
 
-def f(x):
-    """factorial of x (x!)"""
-    if x < 0:
-        print("Factorial of", x, "is not defined.")
+def factorial(n):
+    if n < 0:
+        raise ValueError("Factorial not defined for negative numbers.")
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+
+def nCr(n, r):
+    if r < 0 or r > n:
+        raise ValueError("Require 0 ≤ r ≤ n")
+    r = min(r, n - r)  # optimization
+    num = 1
+    den = 1
+    for i in range(1, r + 1):
+        num *= n - r + i
+        den *= i
+    return num // den
+
+
+def nPr(n, r):
+    if r < 0 or r > n:
+        raise ValueError("Require 0 ≤ r ≤ n")
+    result = 1
+    for i in range(n, n - r, -1):
+        result *= i
+    return result
+
+
+# ---------- helpers ----------
+
+def get_int(prompt):
+    try:
+        return int(input(prompt))
+    except ValueError:
+        print("Please enter an integer.")
         return None
-    k = 1
-    for i in range(1, x + 1):
-        k *= i
-    return k
 
-def c(n, r):
-    """nCr = n! / (r!(n-r)!)"""
-    if r < 0 or n < 0 or r > n:
-        print("Invalid: n and r must satisfy 0 <= r <= n.")
-        return None
-    return f(n) // (f(r) * f(n - r))
 
-def p(n, r):
-    """nPr = n! / (n-r)!"""
-    if r < 0 or n < 0 or r > n:
-        print("Invalid: n and r must satisfy 0 <= r <= n.")
-        return None
-    return f(n) // f(n - r)
-
-# ---------- arranging (permutations) ----------
+# ---------- arranging ----------
 
 def arrange():
-    a = input("What are the items you want to arrange? ")
-    b = int(input(f"How many {a} are there in total (n)? "))
-    r = int(input(f"How many out of these {b} {a} do you want to arrange (r)? "))
+    item = input("What are the items you want to arrange? ")
+    n = get_int(f"How many {item} are there in total (n)? ")
+    r = get_int(f"How many out of these {n} {item} do you want to arrange (r)? ")
 
-    if r > b or r < 0:
-        print("r must satisfy 0 <= r <= n.")
+    if n is None or r is None or r < 0 or r > n:
+        print("Invalid values.")
         return
 
-    rep = input("Are repetitions allowed? (yes/no) ")
+    rep = input("Are repetitions allowed? (yes/no): ").lower()
 
-    if rep.lower() == "yes":
-        # arrangements with repetition: n^r
-        ways = b ** r
-        print(f"The number of ways of arranging {r} {a} from {b} {a} with repetition is {ways}.")
+    if rep == "yes":
+        print(f"Ways = {n ** r}")
         return
 
-    # no repetition
-    circ = input("Is the arrangement in a circle? (yes/no) ")
-    if circ.lower() == "yes":
-        if r == 0 or r == 1:
-            ways = 1
-        else:
-            # circular permutations of r distinct objects = (r-1)!
-            ways = f(r-1)
-        print(f"The number of circular arrangements of {r} distinct {a} is {ways}.")
-    elif rep.lower()==no or circ.lower()==no:
-        ways = p(b, r)
-        print(f"The number of ways of arranging {r} distinct {a} out of {b} {a} in a line is {ways}.")
+    circ = input("Is the arrangement circular? (yes/no): ").lower()
 
-# ---------- selecting (combinations) ----------
+    if circ == "yes":
+        if r != n:
+            print("Circular permutations require arranging all objects.")
+            return
+        print(f"Ways = {factorial(n - 1)}")
+    else:
+        print(f"Ways = {nPr(n, r)}")
+
+
+# ---------- selecting ----------
 
 def select():
-    d = input("What are the items you want to select? ")
-    n = int(input(f"How many {d} are there in total (n)? "))
-    r = int(input(f"How many out of these {n} {d} do you want to select (r)? "))
+    item = input("What are the items you want to select? ")
+    n = get_int(f"How many {item} are there in total (n)? ")
+    r = get_int(f"How many out of these {n} {item} do you want to select (r)? ")
 
-    if r > n or r < 0:
-        print("r must satisfy 0 <= r <= n.")
+    if n is None or r is None or r < 0 or r > n:
+        print("Invalid values.")
         return
 
-    rep = input("Are repetitions allowed in selection? (yes/no) ")
+    rep = input("Are repetitions allowed? (yes/no): ").lower()
 
-    if rep.lower() == "no":
-        # simple nCr
-        g = c(n, r)
-        print(f"The number of ways of selecting {r} {d} out of {n} {d} is {g}.")
-    elif rep.lower()=="yes":
-        # combinations with repetition: C(n+r-1, r)
-        g = c(n + r - 1, r)
-        print(f"The number of ways of selecting {r} {d} from {n} {d} with repetition is {g}.")
+    if rep == "yes":
+        print(f"Ways = {nCr(n + r - 1, r)}")
+    else:
+        print(f"Ways = {nCr(n, r)}")
 
-# ---------- grouping (unordered groups) ----------
 
-def groupf():
-    sizes = []
-    I = input("What are the items you want to group? (all items are considered distinct) ")
-    h = int(input(f"Enter the number of {I} available: "))
-    g = int(input("Enter how many groups you want to form: "))
+# ---------- grouping ----------
 
-    total = 0
-    print("Enter sizes of each group (sum must be equal to total items):")
-    for i in range(g):
-        s = int(input(f"  Size of group {i + 1}: "))
-        sizes.append(s)
-        total += s
+def grouping(labelled=False):
+    item = input("What are the items? (all distinct): ")
+    n = get_int(f"Enter number of {item}: ")
+    g = get_int("Enter number of groups: ")
 
-    if total != h:
-        print(f"The sizes you entered sum to {total}, but there are {h} {I}. Please try again.")
+    if n is None or g is None:
         return
 
-    # formula: h! / Π ( (size_i!) * (count_of_groups_with_this_size)! )
-    denom = 1
-    for s in set(sizes):
-        m = sizes.count(s)
-        denom *= (f(s) ** m) * f(m)
-
-    W = f(h) // denom
-    print(f"You can split {h} distinct {I} into the specified groups in {W} different ways.")
-
-# ---------- distributing into labelled groups ----------
-
-def groupd():
     sizes = []
-    I = input("What are the items you want to distribute? (all items are considered distinct) ")
-    h = int(input(f"Enter the number of {I} available: "))
-    g = int(input("Enter how many groups you want to form: "))
-
-    total = 0
-    print("Enter sizes of each group (sum must be equal to total items):")
+    print("Enter sizes of each group:")
     for i in range(g):
-        s = int(input(f"  Size of group {i + 1}: "))
+        s = get_int(f"  Size of group {i + 1}: ")
+        if s is None:
+            return
         sizes.append(s)
-        total += s
 
-    if total != h:
-        print(f"The sizes you entered sum to {total}, but there are {h} {I}. Please try again.")
+    if sum(sizes) != n:
+        print("Group sizes must sum to total items.")
         return
 
     denom = 1
     for s in set(sizes):
         m = sizes.count(s)
-        denom *= (f(s) ** m) * f(m)
+        denom *= (factorial(s) ** m) * factorial(m)
 
-    # first count ways to form unlabelled groups
-    W = f(h) // denom
-    # labels for g groups: multiply by g!
-    DW = W * f(g)
+    ways = factorial(n) // denom
 
-    print(f"You can distribute {h} distinct {I} into the specified labelled groups in {DW} different ways.")
+    if labelled:
+        ways *= factorial(g)
+
+    print(f"Ways = {ways}")
+
 
 # ---------- menu ----------
 
@@ -145,49 +130,56 @@ def main():
     while True:
         print("\n----- Combinatorics Menu -----")
         print("1. Factorial")
-        print("2. nCr (Combination)")
-        print("3. nPr (Permutation)")
+        print("2. nCr")
+        print("3. nPr")
         print("4. Arrange objects")
         print("5. Select objects")
-        print("6. Group objects (unlabelled groups)")
-        print("7. Distribute objects (labelled groups)")
+        print("6. Group objects (unlabelled)")
+        print("7. Distribute objects (labelled)")
         print("0. Exit")
 
         choice = input("Enter your choice: ")
 
-        if choice == "1":
-            n = int(input("Enter n: "))
-            print("Factorial =", f(n))
+        try:
+            if choice == "1":
+                n = get_int("Enter n: ")
+                if n is not None:
+                    print("Factorial =", factorial(n))
 
-        elif choice == "2":
-            n = int(input("Enter n: "))
-            r = int(input("Enter r: "))
-            print("nCr =", c(n, r))
+            elif choice == "2":
+                n = get_int("Enter n: ")
+                r = get_int("Enter r: ")
+                print("nCr =", nCr(n, r))
 
-        elif choice == "3":
-            n = int(input("Enter n: "))
-            r = int(input("Enter r: "))
-            print("nPr =", p(n, r))
+            elif choice == "3":
+                n = get_int("Enter n: ")
+                r = get_int("Enter r: ")
+                print("nPr =", nPr(n, r))
 
-        elif choice == "4":
-            arrange()
+            elif choice == "4":
+                arrange()
 
-        elif choice == "5":
-            select()
+            elif choice == "5":
+                select()
 
-        elif choice == "6":
-            groupf()
+            elif choice == "6":
+                grouping(labelled=False)
 
-        elif choice == "7":
-            groupd()
+            elif choice == "7":
+                grouping(labelled=True)
 
-        elif choice == "0":
-            print("Goodbye!")
-            break
+            elif choice == "0":
+                print("Goodbye!")
+                break
 
-        else:
-            print("Invalid choice. Please try again.")
+            else:
+                print("Invalid choice.")
 
-# run the menu
+        except ValueError as e:
+            print("Error:", e)
+
+
+# ---------- run ----------
+
 if __name__ == "__main__":
     main()
